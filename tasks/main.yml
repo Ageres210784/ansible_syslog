@@ -1,0 +1,53 @@
+---
+- name: TLS for SYSLOG | Checks | Check provided options
+  import_tasks: _prechecks.yml
+  tags: ['checks']
+
+- name: TLS for SYSLOG | Installation | Prepare OpenSSL CA
+  import_tasks: prepare_openssl_ca.yml
+  tags: ['openssl_ca_prepare']
+
+- name: TLS for SYSLOG | CA creation | Setup OpenSSL CA
+  import_tasks: setup_openssl_ca.yml
+  tags: ['openssl_ca_setup']
+
+- name: VPN | Users | Ensure given users on server
+  include_tasks: create_openvpn_user.yml
+  loop: "{{ clients }}"
+  loop_control:
+    loop_var: user
+  tags:
+    - create_users
+    - openvpn_users
+    - send_mails
+
+- name: VPN | Configuration | Check if CRL file exists
+  stat:
+    path: /etc/openvpn/easy-rsa/keys/crl.pem
+  register: crl_file
+  tags:
+    - openvpn_config
+    - revoke_users
+    - openvpn_users
+
+- name: VPN | Users | Revoke not listed users on server
+  import_tasks: remove_openvpn_users.yml
+  tags:
+    - revoke_users
+    - openvpn_users
+
+- name: VPN | Configuration | Check if CRL file exists
+  stat:
+    path: /etc/openvpn/easy-rsa/keys/crl.pem
+  register: crl_file
+  tags: ['openvpn_config']
+
+- name: VPN | Configuration | Ensure main config file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: 'openvpn.conf', dest: '/etc/openvpn/openvpn.conf' }
+  notify:
+    - Restart OpenVPN
+  tags: ['openvpn_config']

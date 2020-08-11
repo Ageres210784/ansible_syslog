@@ -31,4 +31,4 @@
       - '{{ ca_dir_path }}/certs'
       - '{{ ca_dir_path }}/crl'
       - '{{ ca_dir_path }}/newcerts'
-      - '{{ ca_dir_path }}/private
+      - '{{ ca_dir_path }}/private'

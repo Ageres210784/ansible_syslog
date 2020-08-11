@@ -1,0 +1,24 @@
+---
+- name: TLS for SYSLOG | Keys creation | Create Client Key
+  shell: "openssl req -nodes -new -x509 -keyout clientkey.pem -out clientreq.pem -days 365 -config openssl.cnf"
+  args:
+    chdir: {{ca_dir_path}}
+    creates: "clientreq.pem"
+    creates: "clientkey.pem"
+
+- name: TLS for SYSLOG | Keys creation | Create Client CSR
+  shell: "openssl x509 -x509toreq -in clientreq.pem -signkey clientkey.pem -out tmp.pem"
+  args:
+    chdir: {{ca_dir_path}}
+    creates: "tmp.pem"
+
+- name: TLS for SYSLOG | Keys creation | Sign Client Cert
+  shell: "openssl ca -config openssl.cnf -policy policy_anything -out clientcert.pem -infiles tmp.pem"
+  args:
+    chdir: {{ca_dir_path}}
+    creates: "clientcert.pem"
+
+- name: TLS for SYSLOG | Keys creation | Remove Client CSR
+  file:
+    path: {{ca_dir_path}}/tmp.pem
+    state: absent

@@ -1,0 +1,31 @@
+---
+- name: TLS for SYSLOG | Keys creation | Create CA certificate and keys
+  shell: "openssl req -new -x509 -keyout private/cakey.pem -out cacert.pem -days 365 -config openssl.cnf -passout pass:{{ca_password}} -subj \"/C={{ca.country}}/ST={{ca.province}}/L={{ca.city}}/O={{ca.org}}/OU={{ca.ou}}/CN={{ansible_default_ipv4.address}}/emailAddress={{ca.email}}\""
+  args:
+    chdir: {{ca_dir_path}}
+    creates: "private/cakey.pem"
+    creates: "cacert.pem"
+
+- name: TLS for SYSLOG | Keys creation | Create Server Key
+  shell: "openssl req -nodes -new -x509 -keyout serverkey.pem -out serverreq.pem -days 365 -config openssl.cnf"
+  args:
+    chdir: {{ca_dir_path}}
+    creates: "serverkey.pem"
+    creates: "serverreq.pem"
+
+- name: TLS for SYSLOG | Keys creation | Create Server CSR
+  shell: "openssl x509 -x509toreq -in serverreq.pem -signkey serverkey.pem -out tmp.pem"
+  args:
+    chdir: {{ca_dir_path}}
+    creates: "tmp.pem"
+
+- name: TLS for SYSLOG | Keys creation | Sign Server Cert
+  shell: "openssl ca -config openssl.cnf -policy policy_anything -out servercert.pem -infiles tmp.pem"
+  args:
+    chdir: {{ca_dir_path}}
+    creates: "servercert.pem"
+
+- name: TLS for SYSLOG | Keys creation | Remove Server CSR
+  file:
+    path: {{ca_dir_path}}/tmp.pem
+    state: absent

@@ -7,6 +7,10 @@
   import_tasks: prepare_openssl_ca.yml
   tags: ['openssl_ca_prepare']
 
-- name: TLS for SYSLOG | CA creation | Setup OpenSSL CA
-  import_tasks: setup_openssl_ca.yml
-  tags: ['openssl_ca_setup']
+- name: TLS for SYSLOG | CA creation | Generate CA and Server keys
+  import_tasks: generate_ca_and_server_keys_and_certs.yml
+  tags: ['generate_ca_and_server_keys_and_certs.yml']
+
+- name: TLS for SYSLOG | CA creation | Generate Clients keys
+  import_tasks: generate_client_key_and_cert.yml
+  tags: ['generate_client_key_and_cert.yml']

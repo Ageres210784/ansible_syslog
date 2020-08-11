@@ -1,24 +1,24 @@
 ---
 - name: TLS for SYSLOG | Keys creation | Create Client Key
-  shell: "openssl req -nodes -new -x509 -keyout clientkey.pem -out clientreq.pem -days 365 -config openssl.cnf"
+  shell: "openssl req -nodes -new -x509 -keyout {{ user.name }}key.pem -out {{ user.name }}req.pem -days 365 -config openssl.cnf"
   args:
     chdir: {{ca_dir_path}}
-    creates: "clientreq.pem"
-    creates: "clientkey.pem"
+    creates: "{{ user.name }}req.pem"
+    creates: "{{ user.name }}key.pem"
 
 - name: TLS for SYSLOG | Keys creation | Create Client CSR
-  shell: "openssl x509 -x509toreq -in clientreq.pem -signkey clientkey.pem -out tmp.pem"
+  shell: "openssl x509 -x509toreq -in clientreq.pem -signkey clientkey.pem -out {{ user.name }}tmp.pem"
   args:
     chdir: {{ca_dir_path}}
-    creates: "tmp.pem"
+    creates: "{{ user.name }}tmp.pem"
 
 - name: TLS for SYSLOG | Keys creation | Sign Client Cert
-  shell: "openssl ca -config openssl.cnf -policy policy_anything -out clientcert.pem -infiles tmp.pem"
+  shell: "openssl ca -config openssl.cnf -policy policy_anything -out {{ user.name }}cert.pem -infiles {{ user.name }}tmp.pem"
   args:
     chdir: {{ca_dir_path}}
-    creates: "clientcert.pem"
+    creates: "{{ user.name }}.pem"
 
 - name: TLS for SYSLOG | Keys creation | Remove Client CSR
   file:
-    path: {{ca_dir_path}}/tmp.pem
+    path: "{{ca_dir_path}}/{{ user.name }}tmp.pem"
     state: absent

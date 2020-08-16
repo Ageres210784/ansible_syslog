@@ -1,5 +1,9 @@
 ---
-- name: TLS for SYSLOG | Checks | OS type
-  fail:
-    msg: "Sorry, your OS type is not supported"
-  when: ansible_distribution != "Ubuntu"
+#- name: TLS for SYSLOG | Checks | OS type
+  #  fail:
+  # msg: "Sorry, your OS type is not supported"
+  #when: ansible_distribution != "Ubuntu"
+  #
+- name: Test variables
+  shell: |
+    echo "{{ test_var}}"

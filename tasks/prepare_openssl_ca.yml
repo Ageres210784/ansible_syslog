@@ -26,9 +26,9 @@
     owner: root
     group: root
     state: directory
-    with_items:
-      - '{{ ca_dir_path }}'
-      - '{{ ca_dir_path }}/certs'
-      - '{{ ca_dir_path }}/crl'
-      - '{{ ca_dir_path }}/newcerts'
-      - '{{ ca_dir_path }}/private'
+  with_items:
+    - "{{ ca_dir_path }}"
+    - "{{ ca_dir_path }}/certs"
+    - "{{ ca_dir_path }}/crl"
+    - "{{ ca_dir_path }}/newcerts"
+    - "{{ ca_dir_path }}/private"

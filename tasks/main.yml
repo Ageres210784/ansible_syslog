@@ -5,7 +5,11 @@
 
 - name: TLS for SYSLOG | Installation | Prepare OpenSSL CA
   import_tasks: prepare_openssl_ca.yml
-  tags: ['openssl_ca_prepare']
+  tags: ['setup_openssl_ca.yml']
+
+- name: TLS for SYSLOG | Setup | Setup files for OpenSSL CA
+  import_tasks: setup_openssl_ca.yml
+  tags: ['setup_openssl_ca.yml']
 
 - name: TLS for SYSLOG | CA creation | Generate CA and Server keys
   import_tasks: generate_ca_and_server_keys_and_certs.yml

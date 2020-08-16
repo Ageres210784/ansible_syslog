@@ -2,20 +2,20 @@
 - name: TLS for SYSLOG | Keys creation | Create Client Key
   shell: "openssl req -nodes -new -x509 -keyout {{ user.name }}key.pem -out {{ user.name }}req.pem -days 365 -config openssl.cnf"
   args:
-    chdir: {{ca_dir_path}}
+    chdir: "{{ca_dir_path}}"
     creates: "{{ user.name }}req.pem"
     creates: "{{ user.name }}key.pem"
 
 - name: TLS for SYSLOG | Keys creation | Create Client CSR
   shell: "openssl x509 -x509toreq -in clientreq.pem -signkey clientkey.pem -out {{ user.name }}tmp.pem"
   args:
-    chdir: {{ca_dir_path}}
+    chdir: "{{ca_dir_path}}"
     creates: "{{ user.name }}tmp.pem"
 
 - name: TLS for SYSLOG | Keys creation | Sign Client Cert
   shell: "openssl ca -config openssl.cnf -policy policy_anything -out {{ user.name }}cert.pem -infiles {{ user.name }}tmp.pem"
   args:
-    chdir: {{ca_dir_path}}
+    chdir: "{{ca_dir_path}}"
     creates: "{{ user.name }}.pem"
 
 - name: TLS for SYSLOG | Keys creation | Remove Client CSR

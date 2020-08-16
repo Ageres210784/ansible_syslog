@@ -1,11 +1,18 @@
 ---
 - name: TLS for SYSLOG | Configuration | Copy to openssl config
-  file:
-    src: "/etc/ssl/openssl.cnf openssl.cnf"
+  copy:
+    src: "/etc/ssl/openssl.cnf"
     dest: "{{ca_dir_path}}/openssl.cnf"
 
 - name: TLS for SYSLOG | Configuration | Change default CA dir
   lineinfile:
     path: "{{ca_dir_path}}/openssl.cnf"
-    regexp: './demoCA'
+    firstmatch: yes
+    insertafter: '[ CA_default ]'
+    regexp: '^dir'
     line: 'dir             = .'
+
+- name: TLS for SYSLOG | Configuration | Create base files
+  shell: echo "01" > serial && cp /dev/null index.txt
+  args:
+    chdir: "{{ca_dir_path}}"

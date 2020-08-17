@@ -9,10 +9,17 @@
     creates: "private/cakey.pem"
     creates: "cacert.pem"
 
-- name: TLS for SYSLOG | Keys creation | Create CA key link
-  shell: ln -s cacert.pem $(openssl x509 -noout -hash -in cacert.pem)
+- name: TLS for SYSLOG | Keys creation | Register CA cert hash
+  shell: openssl x509 -noout -hash -in cacert.pem
+  register: cacert_hash
   args:
     chdir: "{{ca_dir_path}}"
+
+- name: TLS for SYSLOG | Keys creation | Create CAcert link
+  file:
+    src: "{{ca_dir_path}}/cacert.pem"
+    dest: "{{ca_dir_path}}/{{cacert_hash.stdout}}"
+    state: link
 
 - name: TLS for SYSLOG | Keys creation | Create Server Key
   shell: |
@@ -39,3 +46,9 @@
   file:
     path: "{{ca_dir_path}}/tmp.pem"
     state: absent
+
+- name: TLS for SYSLOG | CRL setup | Create default syslog.crl.pem
+  shell: openssl ca -config openssl.cnf -passin pass:{{ca_password}} -gencrl -out crl/syslog.crl.pem 
+  args:
+    chdir: "{{ca_dir_path}}"
+    creates: "crl/syslog.crl.pem"

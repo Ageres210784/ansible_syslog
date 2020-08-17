@@ -1,0 +1,10 @@
+---
+- name: TLS for SYSLOG | Revoke clients Certs | Revoke host cert
+  shell: openssl ca -config openssl.cnf -passin pass:{{ca_password}} -revoke certs/"{{host}}cert.pem" || true
+  args:
+    chdir: "{{ca_dir_path}}"
+
+- name: TLS for SYSLOG | CRL setup | Update syslog.crl.pem
+  shell: openssl ca -gencrl -passin pass:{{ca_password}} -out crl/syslog.crl.pem -config openssl.cnf
+  args:
+    chdir: "{{ca_dir_path}}"

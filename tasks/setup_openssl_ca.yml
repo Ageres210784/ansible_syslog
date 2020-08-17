@@ -12,7 +12,15 @@
     regexp: '^dir'
     line: 'dir             = .'
 
-- name: TLS for SYSLOG | Configuration | Create base files
+- name: TLS for SYSLOG | Configuration | Create serial and index.txt
   shell: echo "01" > serial && cp /dev/null index.txt
   args:
     chdir: "{{ca_dir_path}}"
+    creates: serial
+    creates: index.txt
+
+- name: TLS for SYSLOG | Configuration | Create crlnumber
+  shell: echo 1000 > ./crlnumber
+  args:
+    chdir: "{{ca_dir_path}}"
+    creates: crlnumber

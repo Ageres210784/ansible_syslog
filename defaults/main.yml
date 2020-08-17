@@ -21,4 +21,12 @@ server:
   ou: DevOps
   email: admin@localhost
 
+client:
+  country: RU
+  province: MSK
+  city: Moscow
+  org: BIG
+  ou: DevOps
+  email: admin@localhost
+
 clients: []

@@ -37,7 +37,7 @@
     creates: "tmp.pem"
 
 - name: TLS for SYSLOG | Keys creation | Sign Server Cert
-  shell: "openssl ca -config openssl.cnf  -passin pass:{{ca_password}} -policy policy_anything -out servercert.pem -infiles tmp.pem"
+  shell: "openssl ca -config openssl.cnf -batch -passin pass:{{ca_password}} -policy policy_anything -out servercert.pem -infiles tmp.pem"
   args:
     chdir: "{{ca_dir_path}}"
     creates: "servercert.pem"

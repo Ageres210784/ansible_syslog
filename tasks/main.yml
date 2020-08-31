@@ -15,7 +15,7 @@
   import_tasks: generate_ca_and_server_keys_and_certs.yml
   tags: ['generate_ca_and_server_keys_and_certs.yml']
 
-- name: TLS for SYSLOG | CA creation | Generate Clients keys
+- name: TLS for SYSLOG | Clients keys | Generate Clients keys
   include_tasks: generate_client_key_and_cert.yml
   tags: ['generate_client_key_and_cert.yml']
   loop: "{{ groups['syslog-tls'] }}"
@@ -26,5 +26,12 @@
   include_tasks: revoke_clients_certs.yml
   tags: ['revoke_clients_certs.yml']
   loop: "{{ groups['revoke-syslog-tls'] }}"
+  loop_control:
+    loop_var: host
+
+- name: TLS for SYSLOG | CA creation | Fetch clients certs and keys
+  include_tasks: fetch_clients_keys.yml
+  tags: ['fetch_clients_keys.yml']
+  loop: "{{ groups['syslog-tls'] }}"
   loop_control:
     loop_var: host

@@ -1,5 +1,0 @@
----
-- name: Test OpenSSL setup on localhost
-  hosts: localhost
-  roles:
-    - ansible_tls_for_syslog

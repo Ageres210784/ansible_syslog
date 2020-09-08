@@ -7,7 +7,6 @@
   args:
     chdir: "{{ca_dir_path}}"
     creates: "private/cakey.pem"
-    creates: "cacert.pem"
 
 - name: TLS for SYSLOG | Keys creation | Register CA cert hash
   shell: openssl x509 -noout -hash -in cacert.pem
@@ -18,7 +17,7 @@
 - name: TLS for SYSLOG | Keys creation | Create CAcert link
   file:
     src: "{{ca_dir_path}}/cacert.pem"
-    dest: "{{ca_dir_path}}/{{cacert_hash.stdout}}"
+    dest: "{{ca_dir_path}}/{{cacert_hash.stdout}}.0"
     state: link
 
 - name: TLS for SYSLOG | Keys creation | Create Server Key
@@ -27,7 +26,6 @@
     -subj /C={{server.country}}/ST={{server.province}}/L={{server.city}}/O={{server.org}}/OU={{server.ou}}/CN={{ansible_default_ipv4.address}}/emailAddress={{server.email}}
   args:
     chdir: "{{ca_dir_path}}"
-    creates: "serverkey.pem"
     creates: "serverreq.pem"
 
 - name: TLS for SYSLOG | Keys creation | Create Server CSR

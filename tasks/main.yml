@@ -1,46 +1,17 @@
 ---
-- name: TLS for SYSLOG | Checks | Check provided options
+- name: SYSLOG Server TLS |  Check provided options
   import_tasks: _prechecks.yml
-  tags: ['checks']
 
-- name: TLS for SYSLOG | Installation | Install requirments
+- name: SYSLOG Server TLS |  Install requirments
   import_tasks: install_requirments.yml
-  tags: ['install_requirments.yml']
 
-- name: TLS for SYSLOG | Setup | Setup files for OpenSSL CA
-  import_tasks: setup_openssl_ca.yml
-  tags: ['setup_openssl_ca.yml']
+- name: SYSLOG Server TLS | Copy keys and certs
+  import_tasks: copy_files.yml
 
-- name: TLS for SYSLOG | CA creation | Generate CA and server keys
-  import_tasks: generate_ca_and_server_keys_and_certs.yml
-  tags: ['generate_ca_and_server_keys_and_certs.yml']
-
-- name: TLS for SYSLOG | Clients keys | Generate Clients keys
-  include_tasks: generate_client_key_and_cert.yml
-  tags: ['generate_client_key_and_cert.yml']
-  loop: "{{ groups['syslog-tls'] }}"
-  loop_control:
-    loop_var: host
-
-- name: TLS for SYSLOG | CA creation | Revoke clients certs
-  include_tasks: revoke_clients_certs.yml
-  tags: ['revoke_clients_certs.yml']
-  loop: "{{ groups['revoke-syslog-tls'] }}"
-  loop_control:
-    loop_var: host
-
-- name: TLS for SYSLOG | CA creation | Fetch clients certs and keys
-  include_tasks: fetch_clients_keys.yml
-  tags: ['fetch_clients_keys.yml']
-  loop: "{{ groups['syslog-tls'] }}"
-  loop_control:
-    loop_var: host
-
-- name: TLS for SYSLOG | Setup | Install syslog-ng server templates
+- name: SYSLOG Server TLS |  Install syslog-ng server templates
   include_tasks: install_syslog_server_templates.yml
-  tags: ['install_syslog_server_templates.yml']
 
-- name: TLS for SYSLOG | Post-Setup | Restart syslog-ng
+- name: SYSLOG Server TLS |  Restart syslog-ng
   service:
     name: syslog-ng
     state: restarted

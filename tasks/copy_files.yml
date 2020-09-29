@@ -1,0 +1,27 @@
+---
+- name: SYSLOG Server TLS | Ensure dirs
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "/etc/syslog-ng/ca.d"
+    - "/etc/syslog-ng/cert.d"
+    - "/etc/syslog-ng/key.d"
+
+- name: SYSLOG Server TLS | 
+  copy:
+    src: "{{ ansible_transfer_dir }}/cacert.pem"
+    dest: "/etc/syslog-ng/ca.d/cacert.pem"
+
+- name: TLS for SYSLOG | Client {{ ansible_default_ipv4.address }} | Calculate cacert hash
+  shell:
+    cmd: openssl x509 -noout -hash -in cacert.pem
+    chdir: "{{ client_ca_dir  }}"
+  register: cacert_hash
+
+ 
+- name: TLS for SYSLOG | Client {{ ansible_default_ipv4.address }} | Create cacert link
+  file:
+    state: link
+    src: "{{ client_ca_dir }}/cacert.pem"
+    path: "{{ client_ca_dir }}/{{ cacer_hash}}.0"

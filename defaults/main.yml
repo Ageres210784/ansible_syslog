@@ -1,8 +1,6 @@
 ---
 
-test_var: test
-server_name: localhost
-ca_dir_path: /opt/syslog_ca
+ca_dir: /opt/syslog_ca
 ca_password: some_secret_password
 
 ca:

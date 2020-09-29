@@ -1,5 +1,5 @@
 ---
-- name: TLS for SYSLOG | Copy Configs      | Copy client configs
+- name: SYSLOG Server TLS |  Copy client configs
   template:
     dest: "/etc/syslog-ng/conf.d/10-server.conf"
     owner: "root"

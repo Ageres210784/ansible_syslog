@@ -1,17 +1,12 @@
 ---
-- name: SYSLOG Server TLS |  Check provided options
+- name: Check provided options
   import_tasks: _prechecks.yml
 
-- name: SYSLOG Server TLS |  Install requirments
-  import_tasks: install_requirments.yml
+- name: Install requirments
+  import_tasks: install_requirements.yml
 
 - name: SYSLOG Server TLS | Copy keys and certs
   import_tasks: copy_files.yml
 
-- name: SYSLOG Server TLS |  Install syslog-ng server templates
+- name: Install syslog-ng server templates
   include_tasks: install_syslog_server_templates.yml
-
-- name: SYSLOG Server TLS |  Restart syslog-ng
-  service:
-    name: syslog-ng
-    state: restarted

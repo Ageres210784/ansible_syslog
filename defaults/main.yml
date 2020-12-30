@@ -1,30 +1,14 @@
 ---
-
-ca_dir: /opt/syslog_ca
-ca_password: some_secret_password
-
-ca:
-  country: RU
-  province: MSK
-  city: Moscow
-  org: BIG
-  ou: DevOps
-  email: admin@localhost
-
-server:
-  country: RU
-  province: MSK
-  city: Moscow
-  org: BIG
-  ou: DevOps
-  email: admin@localhost
-
-client:
-  country: RU
-  province: MSK
-  city: Moscow
-  org: BIG
-  ou: DevOps
-  email: admin@localhost
-
-clients: []
+syslog_dir: /etc/syslog-ng
+syslog_ca_dir: "{{ syslog_dir }}/ca.d"
+syslog_cert_dir: "{{ syslog_dir }}/cert.d"
+syslog_key_dir: "{{ syslog_dir }}/key.d"
+syslog_crl_dir: "{{ syslog_dir }}/crl"
+ca_cert_name: cacert.pem
+# In case you need to push local CA certificate
+push_ca_cert: true
+# Dir on localhost to save CA cert in
+local_ca_cert_dir: /tmp/ca_dir
+# Whether this host is server or client
+is_syslog_server: false
+syslog_port: 6514

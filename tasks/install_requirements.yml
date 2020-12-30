@@ -1,5 +1,5 @@
 ---
-- name: SYSLOG Server TLS |  Install latest version of OpenSSL
+- name: Install latest version of OpenSSL
   package:
     name: openssl
     state: present
@@ -8,7 +8,7 @@
   retries: 10
   delay: 2
 
-- name: SYSLOG Server TLS |  Install latest version of syslog-ng
+- name: Install latest version of syslog-ng
   package:
     name: syslog-ng
     state: present
@@ -17,10 +17,10 @@
   retries: 10
   delay: 2
 
-- name: SYSLOG Server TLS |  Install python requirments
+- name: Install python requirments
   apt:
     name: python3-pip
 
-- name: SYSLOG Server TLS |  Install openssl requirments
+- name: Install openssl requirments
   pip:
     name: cryptography>=1.3

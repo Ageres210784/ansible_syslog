@@ -1,5 +1,12 @@
 ---
-- name: SYSLOG Server TLS |  Check OS type
+- name: Check OS type
   fail:
     msg: "Sorry, your OS type is not supported"
   when: ansible_distribution != "Ubuntu"
+
+- name: Set syslog master common variable
+  delegate_to: localhost
+  delegate_facts: true
+  set_fact:
+    syslog_server_address: "{{ ansible_default_ipv4.address }}"
+  when: is_syslog_server

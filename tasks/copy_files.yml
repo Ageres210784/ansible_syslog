@@ -1,27 +1,37 @@
 ---
-- name: SYSLOG Server TLS | Ensure dirs
+- name: Ensure syslog dirs
   file:
     path: "{{ item }}"
+    mode: 0755
+    owner: root
+    group: root
     state: directory
   with_items:
-    - "/etc/syslog-ng/ca.d"
-    - "/etc/syslog-ng/cert.d"
-    - "/etc/syslog-ng/key.d"
+    - "{{ syslog_ca_dir }}"
+    - "{{ syslog_cert_dir }}"
+    - "{{ syslog_key_dir }}"
+    - "{{ syslog_dir }}/conf.d"
+    - "{{ syslog_crl_dir }}"
 
-- name: SYSLOG Server TLS | 
+- name: Copy CA certificate to the host
   copy:
-    src: "{{ ansible_transfer_dir }}/cacert.pem"
-    dest: "/etc/syslog-ng/ca.d/cacert.pem"
+    src: "{{ local_ca_cert_dir }}/{{ ca_cert_name }}"
+    dest: "{{ syslog_ca_dir }}/{{ ca_cert_name }}"
+    mode: 0644
+    owner: root
+    group: root
+  when: push_ca_cert
+  register: ca_cert
 
-- name: TLS for SYSLOG | Client {{ ansible_default_ipv4.address }} | Calculate cacert hash
-  shell:
-    cmd: openssl x509 -noout -hash -in cacert.pem
-    chdir: "{{ client_ca_dir  }}"
+- name: Client {{ ansible_default_ipv4.address }} | Calculate cacert hash
+  command: openssl x509 -noout -hash -in {{ syslog_ca_dir }}/{{ ca_cert_name }}
   register: cacert_hash
+  changed_when: false
+  when: push_ca_cert
 
- 
-- name: TLS for SYSLOG | Client {{ ansible_default_ipv4.address }} | Create cacert link
+- name: Client {{ ansible_default_ipv4.address }} | Create cacert link
   file:
     state: link
-    src: "{{ client_ca_dir }}/cacert.pem"
-    path: "{{ client_ca_dir }}/{{ cacer_hash}}.0"
+    src: "{{ syslog_ca_dir }}/{{ ca_cert_name }}"
+    path: "{{ syslog_ca_dir }}/{{ cacert_hash.stdout }}.0"
+  when: push_ca_cert

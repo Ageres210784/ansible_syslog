@@ -1,7 +1,25 @@
 ---
-- name: SYSLOG Server TLS |  Copy client configs
+- name: Copy server configs
   template:
-    dest: "/etc/syslog-ng/conf.d/10-server.conf"
-    owner: "root"
+    src: 10-server.conf
+    dest: "{{ syslog_dir }}/conf.d/10-server.conf"
+    owner: root
+    group: root
     mode: 0644
-    src: "templates/10-server.conf"
+  when: is_syslog_server
+  register: syslog_server_config
+
+- name: Copy client configs
+  template:
+    src: 10-client.conf
+    dest: "{{ syslog_dir }}/conf.d/10-client.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when: not is_syslog_server
+  register: syslog_client_config
+
+- name: Ensure target configurations are correct
+  command: syslog-ng --syntax-only
+  notify: Restart syslog-ng
+  when: syslog_server_config.changed or syslog_client_config.changed or ca_cert.changed

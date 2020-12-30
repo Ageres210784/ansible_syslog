@@ -41,6 +41,9 @@
     - name: "Client {{ ansible_default_ipv4.address }} | Ensure csr dir"
       file:
         path: "{{ item }}"
+        mode: 0755
+        owner: root
+        group: root
         state: directory
       with_items:
         - "{{ syslog_cert_dir }}"
@@ -91,6 +94,7 @@
     - name: Copy csrs from Ansible to CA host
       copy:
         src: "{{ local_ca_cert_dir }}/csr/"
+        mode: 0640
         dest: "{{ csr_dir }}/"
 
     - name: Find csrs
@@ -130,6 +134,7 @@
       copy:
         src: "{{ local_ca_cert_dir }}/certs/{{ ansible_default_ipv4.address }}.csr.crt"
         dest: "{{ syslog_cert_dir }}/{{ ansible_default_ipv4.address }}.pem"
+        mode: 0640
 
 - name: Ensure syslog servers and clients
   hosts: [syslog_server, syslog_client]

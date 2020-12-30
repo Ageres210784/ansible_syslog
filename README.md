@@ -1,9 +1,9 @@
 # sbog/syslog
 
 [![Build Status](https://travis-ci.com/sorrowless/ansible_syslog.svg?branch=master)](https://travis-ci.com/sorrowless/ansible_syslog)
-[![Ansible Role](https://img.shields.io/ansible/role/51987)](https://galaxy.ansible.com/sorrowless/syslog)
-[![Ansible Quality Score](https://img.shields.io/ansible/quality/51987)](https://galaxy.ansible.com/sorrowless/syslog)
-[![Ansible Role](https://img.shields.io/ansible/role/d/51987)](https://galaxy.ansible.com/sorrowless/syslog)
+[![Ansible Role](https://img.shields.io/ansible/role/52550)](https://galaxy.ansible.com/sorrowless/syslog)
+[![Ansible Quality Score](https://img.shields.io/ansible/quality/52550)](https://galaxy.ansible.com/sorrowless/syslog)
+[![Ansible Role](https://img.shields.io/ansible/role/d/52550)](https://galaxy.ansible.com/sorrowless/syslog)
 [![GitHub](https://img.shields.io/github/license/sorrowless/ansible_syslog)](https://github.com/sorrowless/ansible_syslog/blob/master/LICENSE)
 
 An Ansible role which installs and configures [syslog](https://www.syslog-ng.com) on Linux

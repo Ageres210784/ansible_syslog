@@ -15,7 +15,7 @@ galaxy_info:
         - bionic
         - focal
 
-  galaxy_tags: [openssl, logging, log, logs, syslog, syslog-ng, rsyslog]
+  galaxy_tags: [openssl, logging, log, logs, syslog, syslog_ng, rsyslog]
 
 dependencies:
   - sorrowless.ca

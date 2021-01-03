@@ -12,7 +12,7 @@
       when: ansible_os_family == 'Debian'
 
   roles:
-    - role: ca
+    - role: sorrowless.ca
 
 - name: Client | Create client csr
   hosts: [syslog_server, syslog_client]
@@ -30,15 +30,15 @@
       ou: DevOps
       email: admin@localhost
   tasks:
-    - name: "Client {{ ansible_default_ipv4.address }} | Install python requirements"
+    - name: "Client | Install python requirements"
       apt:
         name: python3-pip
 
-    - name: "Client {{ ansible_default_ipv4.address }} | Install openssl requirements"
+    - name: "Client | Install openssl requirements"
       pip:
         name: cryptography>=1.3
 
-    - name: "Client {{ ansible_default_ipv4.address }} | Ensure csr dir"
+    - name: "Client | Ensure csr dir"
       file:
         path: "{{ item }}"
         mode: 0755
@@ -49,14 +49,14 @@
         - "{{ syslog_cert_dir }}"
         - "{{ syslog_key_dir }}"
 
-    - name: "Client {{ ansible_default_ipv4.address }} | Create private key"
+    - name: "Client | Create private key"
       openssl_privatekey:
         backup: yes
         mode: 0600
         owner: root
         path: "{{ syslog_key_dir }}/{{ ansible_default_ipv4.address }}.pem"
 
-    - name: Client {{ ansible_default_ipv4.address }} | Create csr
+    - name: Client | Create csr
       openssl_csr:
         path: "{{ syslog_cert_dir }}/{{ ansible_default_ipv4.address }}.csr"
         privatekey_path: "{{ syslog_key_dir }}/{{ ansible_default_ipv4.address }}.pem"
@@ -66,7 +66,7 @@
         organizational_unit_name: "{{ ca.ou }}"
         email_address: "{{ ca.email }}"
 
-    - name: Client {{ ansible_default_ipv4.address }} | Fetch csr
+    - name: Client | Fetch csr
       fetch:
         src: "{{ syslog_cert_dir }}/{{ ansible_default_ipv4.address }}.csr"
         dest: "{{ local_ca_cert_dir }}/csr/"
@@ -121,6 +121,7 @@
         dest: "{{ local_ca_cert_dir }}/certs/{{ item }}.crt"
         flat: yes
       with_items: "{{ csr_dir_listing.stdout_lines }}"
+      changed_when: false
 
 - name: Distribute certs
   hosts: [syslog_server, syslog_client]

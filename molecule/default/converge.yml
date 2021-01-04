@@ -156,3 +156,18 @@
     - name: Ensure target configurations are correct
       command: syslog-ng --syntax-only
       changed_when: false
+
+- name: Check that base rules are working
+  hosts: syslog_server
+
+  tasks:
+    - name: Check for syslog client sent some logs to server
+      stat:
+        path: /var/log/security/syslog_client_sudo.audit
+      register: sudo_audit
+      changed_when: false
+
+    - name: Check that sudo logs actually were sent
+      assert:
+        that: sudo_audit.stat.exists
+

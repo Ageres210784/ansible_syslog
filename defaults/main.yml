@@ -11,6 +11,8 @@ push_ca_cert: true
 local_ca_cert_dir: /tmp/ca_dir
 # Whether this host is server or client
 is_syslog_server: false
+# Explicitly set ip address for cases when client is behind NAT
+syslog_ip_address: "{{ ansible_default_ipv4.address }}"
 syslog_port: 6514
 
 # Configuration settings

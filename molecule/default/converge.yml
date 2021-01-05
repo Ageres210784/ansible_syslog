@@ -22,6 +22,7 @@
     syslog_cert_dir: "{{ syslog_dir }}/cert.d/"
     syslog_key_dir: "{{ syslog_dir }}/key.d/"
     local_ca_cert_dir: /tmp/ca_dir
+    syslog_ip_address: "{{ ansible_default_ipv4.address }}"
     ca:
       country: RU
       province: MSK
@@ -54,13 +55,13 @@
         backup: yes
         mode: 0600
         owner: root
-        path: "{{ syslog_key_dir }}/{{ ansible_default_ipv4.address }}.pem"
+        path: "{{ syslog_key_dir }}/{{ syslog_ip_address }}.pem"
 
     - name: Client | Create csr
       openssl_csr:
-        path: "{{ syslog_cert_dir }}/{{ ansible_default_ipv4.address }}.csr"
-        privatekey_path: "{{ syslog_key_dir }}/{{ ansible_default_ipv4.address }}.pem"
-        common_name: "{{ ansible_default_ipv4.address }}"
+        path: "{{ syslog_cert_dir }}/{{ syslog_ip_address }}.csr"
+        privatekey_path: "{{ syslog_key_dir }}/{{ syslog_ip_address }}.pem"
+        common_name: "{{ syslog_ip_address }}"
         country_name: "{{ ca.country }}"
         organization_name: "{{ ca.org }}"
         organizational_unit_name: "{{ ca.ou }}"
@@ -68,7 +69,7 @@
 
     - name: Client | Fetch csr
       fetch:
-        src: "{{ syslog_cert_dir }}/{{ ansible_default_ipv4.address }}.csr"
+        src: "{{ syslog_cert_dir }}/{{ syslog_ip_address }}.csr"
         dest: "{{ local_ca_cert_dir }}/csr/"
         flat: yes
 
@@ -129,12 +130,13 @@
     syslog_dir: /etc/syslog-ng
     syslog_cert_dir: "{{ syslog_dir }}/cert.d/"
     local_ca_cert_dir: /tmp/ca_dir
+    syslog_ip_address: "{{ ansible_default_ipv4.address }}"
   become: yes
   tasks:
     - name: Deliver crt
       copy:
-        src: "{{ local_ca_cert_dir }}/certs/{{ ansible_default_ipv4.address }}.csr.crt"
-        dest: "{{ syslog_cert_dir }}/{{ ansible_default_ipv4.address }}.pem"
+        src: "{{ local_ca_cert_dir }}/certs/{{ syslog_ip_address }}.csr.crt"
+        dest: "{{ syslog_cert_dir }}/{{ syslog_ip_address }}.pem"
         mode: 0640
 
 - name: Ensure syslog servers and clients

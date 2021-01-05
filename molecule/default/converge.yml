@@ -142,6 +142,47 @@
 
   vars:
     ca_dir: /opt/syslog_ca
+    client_destination_server_alias: d_logserver
+    server_source_listen_alias: s_tcp
+    client_additional_configs:
+      # irb
+      - |
+        source s_irb {
+            file("/var/log/irb/permlog.rb"
+              follow-freq(1)
+              program-override("irb")
+            );
+        };
+      - |
+        rewrite r_irb{
+          subst("irb", "irb-${FILE_NAME}", value("PROGRAM"));
+        };
+      - |
+        log {
+          source(s_irb);
+          rewrite(r_irb);
+          destination({{ client_destination_server_alias }});
+        };
+    server_additional_configs:
+      # irb
+      - |
+        filter f_irb {
+         match("irb" value("PROGRAM"));
+        };
+      - |
+        rewrite r_irb{
+          subst("irb-", "", value("PROGRAM"));
+        };
+      - |
+        log {
+          source({{ server_source_listen_alias }});
+          log {
+            filter(f_irb);
+            rewrite(r_irb);
+            # d_by_host_filename is defined in common configs in defaults
+            destination(d_by_host_filename);
+          };
+        };
 
   pre_tasks:
     - name: Update apt cache.
@@ -152,22 +193,8 @@
   roles:
     - role: syslog
 
+  # Tests starting
   post_tasks:
     - name: Ensure target configurations are correct
       command: syslog-ng --syntax-only
       changed_when: false
-
-- name: Check that base rules are working
-  hosts: syslog_server
-
-  tasks:
-    - name: Check for syslog client sent some logs to server
-      stat:
-        path: /var/log/security/syslog_client_sudo.audit
-      register: sudo_audit
-      changed_when: false
-
-    - name: Check that sudo logs actually were sent
-      assert:
-        that: sudo_audit.stat.exists
-

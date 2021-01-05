@@ -12,3 +12,95 @@ local_ca_cert_dir: /tmp/ca_dir
 # Whether this host is server or client
 is_syslog_server: false
 syslog_port: 6514
+
+# Configuration settings
+# Target name for remote server destination config
+client_destination_server_alias: d_logserver
+# These configs are supposed to be common for all hosts, so it make sense to
+# override these on group level
+client_common_configs:
+  # nginx
+  - |
+    source s_nginx {
+      wildcard-file(
+        base-dir("/var/log/nginx/")
+        filename-pattern("*.log")
+        follow-freq(1)
+        recursive(yes)
+        program-override("nginx")
+      );
+    };
+  - |
+    rewrite r_nginx{
+      # We'll put full path with filename on client side and pull it back on
+      # server side
+      subst("nginx", "nginx-${FILE_NAME}", value("PROGRAM"));
+    };
+  - |
+    log {
+      source(s_nginx);
+      rewrite(r_nginx);
+      destination({{ client_destination_server_alias }});
+    };
+  # sudo
+  - |
+    log {
+      source(s_src);
+      filter(f_auth);
+      destination({{ client_destination_server_alias }});
+    };
+server_common_configs:
+  # common destination
+  - |
+    destination d_by_host_filename {
+      file(
+        "/var/log/syslog-remote/${HOST}/${PROGRAM}"
+        create-dirs(yes)
+        perm(0600)
+      );
+    };
+  # nginx
+  - |
+    filter f_nginx {
+     match("nginx" value("PROGRAM"));
+    };
+  - |
+    rewrite r_nginx{
+      # Now we have only full path with filename in PROGRAM variable
+      subst("nginx-", "", value("PROGRAM"));
+    };
+  - |
+    log {
+      source({{ server_source_listen_alias }});
+      log {
+        filter(f_nginx);
+        rewrite(r_nginx);
+        destination(d_by_host_filename);
+      };
+    };
+  # sudo
+  - |
+    destination d_audit {
+      file(
+        "/var/log/syslog-remote/${HOST}/var/log/security/${PROGRAM}.audit"
+        create-dirs(yes)
+        perm(0600)
+      );
+    };
+  - |
+    log {
+        source({{ server_source_listen_alias }});
+        log {
+            filter(f_auth);
+            destination(d_audit);
+        };
+    };
+# Additional configs are per host, so it make sense to override these on host
+# level
+client_additional_configs: []
+server_additional_configs: []
+
+# Address syslog-ng will listen on
+server_listen_address: "0.0.0.0"
+# Source name for server for network listen
+server_source_listen_alias: s_tcp

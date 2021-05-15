@@ -8,5 +8,5 @@
   delegate_to: localhost
   delegate_facts: true
   set_fact:
-    syslog_server_address: "{{ ansible_default_ipv4.address }}"
+    syslog_server_address: "{{ syslog_ip_address | default(ansible_default_ipv4.address) }}"
   when: is_syslog_server

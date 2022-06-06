@@ -8,6 +8,24 @@
   retries: 10
   delay: 2
 
+- name: Add an Apt signing key, uses whichever key is at the URL
+  become: true
+  become_user: root
+  apt_key:
+    url: https://ose-repo.syslog-ng.com/apt/syslog-ng-ose-pub.asc
+  when: upstream_repo
+  tags:
+    - install_syslog-ng
+
+- name: Add specified repository into sources list
+  become: true
+  become_user: root
+  apt_repository:
+    repo: deb https://ose-repo.syslog-ng.com/apt/ stable ubuntu-focal
+  when: upstream_repo
+  tags:
+    - install_syslog-ng
+
 - name: Install latest version of syslog-ng
   package:
     name: syslog-ng
@@ -16,6 +34,8 @@
   until: task_result is success
   retries: 10
   delay: 2
+  tags:
+    - install_syslog-ng
 
 - name: Install python requirments
   apt:

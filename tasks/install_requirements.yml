@@ -13,7 +13,7 @@
   become_user: root
   apt_key:
     url: https://ose-repo.syslog-ng.com/apt/syslog-ng-ose-pub.asc
-  when: spec_repo
+  when: upstream_repo
   tags:
     - install_syslog-ng
 
@@ -22,7 +22,7 @@
   become_user: root
   apt_repository:
     repo: deb https://ose-repo.syslog-ng.com/apt/ stable ubuntu-focal
-  when: spec_repo
+  when: upstream_repo
   tags:
     - install_syslog-ng
 

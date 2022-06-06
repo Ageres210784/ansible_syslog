@@ -15,7 +15,7 @@ is_syslog_server: false
 syslog_ip_address: "{{ ansible_default_ipv4.address }}"
 syslog_port: 6514
 
-spec_repo: false
+upstream_repo: false
 # Configuration settings
 # Target name for remote server destination config
 client_destination_server_alias: d_logserver
